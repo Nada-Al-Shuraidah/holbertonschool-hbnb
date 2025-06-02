@@ -1,15 +1,19 @@
-# 🚩 HBNB - Layered Architecture (Task 0)
+# ⭕ HBNB – Part 1 Technical Documentation
 
-This documentation explains the layered architecture used in the HBNB project. It is structured based on the concept of **package diagrams** where each layer is encapsulated in its own logical package. This approach allows for better separation of concerns, maintainability, and scalability.
+Welcome to the **technical documentation** for Part 1 of the **HBnB Project**, a simplified clone of Airbnb. This project is designed using a layered architecture with clear separation between the API, core logic, and data layers. This file explains the structure, diagrams, and system flow we built step-by-step to form a solid foundation for future implementation phases.
+
+---
+
+# 🚩 Task 0: High-Level Architecture – Package Diagram
+
+The system follows a **three-layered architecture** using **package diagrams** for structure and the **Facade Pattern** for clean communication across layers.
 
 ---
 
 ## 🔶 Presentation Layer
 
 ### 📌 Purpose:
-This is the **interface layer** that interacts with users or external systems. Its main responsibility is to **handle HTTP requests**, delegate them to the business layer, and return appropriate HTTP responses.
-
-It does **not** contain any business logic. Instead, it serves as a clean entry point for the application.
+The entry point of the system. Handles user/API requests and responses.
 
 ### ⚙️ Components:
 - `UserAPI`
@@ -17,25 +21,14 @@ It does **not** contain any business logic. Instead, it serves as a clean entry 
 - `ReviewAPI`
 - `AmenityAPI`
 
-### 💡 Why These Components?
-Each API corresponds to a major resource in the HBNB application (users, places, reviews, and amenities). These components are split to follow **RESTful principles**, where each API provides access to a specific resource.
-
-For example:
-- `UserAPI` handles `/users` routes and delegates user-related operations to the business logic layer.
-
-These APIs expose **endpoints** such as:
-- `GET /users`
-- `POST /places`
-- `DELETE /reviews/<id>`
+These APIs do **not** include logic. They receive HTTP requests (e.g., `POST /users`, `GET /places`) and delegate all processing to the Business Logic Layer via the **FacadeService**.
 
 ---
 
-## 🟦 Business Logic Layer 
+## 🟦 Business Logic Layer
 
 ### 📌 Purpose:
-This layer **processes all the core logic** of the system. It takes care of validations, coordinating between objects, applying rules, and preparing data before persistence or response.
-
-It acts as a **mediator** between the presentation and persistence layers.
+Contains the actual logic for handling business rules, processing data, and managing relationships between objects.
 
 ### ⚙️ Components:
 - `User`
@@ -44,54 +37,109 @@ It acts as a **mediator** between the presentation and persistence layers.
 - `Amenity`
 - `FacadeService`
 
-### 💡 Why These Components?
-Each class (`User`, `Place`, etc.) represents a domain entity with associated logic. For example:
-- `User` might check for valid emails before creating a user.
-- `Place` might calculate availability based on bookings.
-
-The `FacadeService` is a key design element here. It provides a **unified interface** for the APIs to interact with the business logic, hiding the complexity of multiple services or entities. This simplifies the Presentation Layer and helps isolate changes.
+Each class handles its entity's logic (e.g., `User` validates emails, `Place` calculates pricing logic). `FacadeService` unifies access to this logic, so API routes can call it directly without dealing with all individual models.
 
 ---
 
-## 🟢 Persistence Layer 
-### 📌 Purpose:
-This is the **data access layer**. It is responsible for all communication with the storage engine (e.g., database, file system).
+## 🟢 Persistence Layer
 
-It provides a consistent interface to store and retrieve data.
+### 📌 Purpose:
+Handles **storing and retrieving** data from the database or file system.
 
 ### ⚙️ Components:
 - `DatabaseAccess`
   - `saveData()`
   - `retrieveData()`
 
-### 💡 Why These Components?
-This abstraction allows us to change the storage backend (e.g., switch from file to database) **without modifying business logic**. It also supports better testability by mocking the data access in unit tests.
-
-In the HBNB project, this layer typically interacts with the `models` package (e.g., BaseModel) and the storage engine (`DBStorage` or `FileStorage`).
+This abstraction layer ensures the system can switch between storage engines (like FileStorage or DBStorage) without changing core logic.
 
 ---
 
-## 🧩 Why RESTful API?
+## 🖼️ Package Diagram
 
-HBNB uses a **RESTful API** style because it naturally maps HTTP methods (GET, POST, PUT, DELETE) to CRUD operations (Create, Read, Update, Delete).
-
-It simplifies interaction between the front-end and back-end, supports **stateless** communication, and improves scalability.
-
-Example:
-```
-GET /users → fetch all users
-POST /places → create a new place
-DELETE /reviews/<id> → delete a specific review
-```
+🖱️ Click to view: **[UML/Package_Diagram.svg](./UML/Package_Diagram.svg)**
 
 ---
 
-## 🏗️ Summary of Layer Interactions
+# 🧩 Task 1: Business Logic Class Diagram
 
+This diagram illustrates the internal structure of the Business Logic Layer and how entities are related.
+
+## 📌 Main Entities
+
+- **User**
+  - Attributes: `id`, `first_name`, `last_name`, `email`, `password`, `is_admin`, `created_at`, `updated_at`
+  - Relationships: Can create Places and submit Reviews
+
+- **Place**
+  - Attributes: `id`, `title`, `description`, `price`, `latitude`, `longitude`, `created_at`, `updated_at`
+  - Relationships: Belongs to a User, has many Amenities and Reviews
+
+- **Amenity**
+  - Attributes: `id`, `name`, `description`, `created_at`, `updated_at`
+  - Relationships: Can belong to many Places
+
+- **Review**
+  - Attributes: `id`, `text`, `rating`, `created_at`, `updated_at`
+  - Relationships: Linked to a User and a Place
+
+🖱️ Click to view: **[Code/class_diagram.mmd](../Code/class_diagram.mmd)**
+
+---
+
+# 🔁 Task 2: API Sequence Diagrams
+
+We created sequence diagrams to show how API calls interact with all layers.
+
+---
+
+## 🔐 Login API Flow
 ```
-🔶 Presentation Layer
-    ↓ (calls)
-🟦 Business Logic Layer (via Facade)
-    ↓ (calls)
-🟢 Persistence Layer (Data Access)
+User -> UserAPI: login(credentials)
+UserAPI -> UserServices: authenticate(credentials)
+UserServices -> UserRepository: findUserByCredentials()
+UserRepository --> UserServices: User
+UserServices --> UserAPI: AuthToken
+UserAPI --> User: AuthToken
 ```
+📎 [View Source](../Code/sequence_login.mmd)
+
+---
+
+## ✍️ Review Submission API Flow
+```
+User -> ReviewAPI: submit_review(reviewData, token)
+ReviewAPI -> ReviewServices: submit_review(reviewData, userID)
+ReviewServices -> ReviewRepository: saveReview(review)
+ReviewRepository --> ReviewServices: Review
+ReviewServices --> ReviewAPI: ReviewConfirmation
+ReviewAPI --> User: ReviewConfirmation
+```
+📎 [View Source](../Code/sequence_submit_review.mmd)
+
+---
+
+# ✅ Summary
+
+- Built using **Layered Architecture**
+- Applied the **Facade Pattern** for clarity and modularity
+- Created **UML Diagrams** to guide implementation
+- Designed for easy extension in the next project phases
+
+This documentation reflects our **real design decisions**, helping others understand the exact structure, naming, and flow of the HBnB Evolution system.
+
+---
+
+📁 Directory Layout
+```
+part1/
+├── README.md
+├── UML/
+│   └── package_diagram.png
+├── Code/
+│   ├── class_diagram.mmd
+│   ├── sequence_login.mmd
+│   └── sequence_submit_review.mmd
+```
+
+© 2025 – Holberton School & Tuwaiq Academy
