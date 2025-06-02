@@ -82,40 +82,49 @@ This diagram illustrates the internal structure of the Business Logic Layer and 
 - **Review**
   - Attributes: `id`, `text`, `rating`, `created_at`, `updated_at`
   - Relationships: Linked to a User and a Place
+ 
+---
 
-🖱️ Click to view: **[Code/class_diagram.mmd](../Code/class_diagram.mmd)**
+## 🖼️ Class Diagram 
+
+🖱️ Click to view: **[UML/Class_Diagram.svg](./UML/Class_Diagram.svg)**
+
+---
+
+## 🖼️ Source Code
+
+🖱️ Click to view: **[Code/Class_Diagram.mmd](../code/Class_Diagram.mmd)**
 
 ---
 
 # 🔁 Task 2: API Sequence Diagrams
 
-We created sequence diagrams to show how API calls interact with all layers.
+This diagrams shows how API calls interact with all layers.
 
 ---
 
-## 🔐 Login API Flow
-```
-User -> UserAPI: login(credentials)
-UserAPI -> UserServices: authenticate(credentials)
-UserServices -> UserRepository: findUserByCredentials()
-UserRepository --> UserServices: User
-UserServices --> UserAPI: AuthToken
-UserAPI --> User: AuthToken
-```
-📎 [View Source](../Code/sequence_login.mmd)
+## 🖼️ Sequence Diagram for Login
+
+🖱️ Click to view: **[UML/Login_Sequence_Diagram.svg](.UML/Login_Sequence_Diagram.svg)**
 
 ---
 
-## ✍️ Review Submission API Flow
-```
-User -> ReviewAPI: submit_review(reviewData, token)
-ReviewAPI -> ReviewServices: submit_review(reviewData, userID)
-ReviewServices -> ReviewRepository: saveReview(review)
-ReviewRepository --> ReviewServices: Review
-ReviewServices --> ReviewAPI: ReviewConfirmation
-ReviewAPI --> User: ReviewConfirmation
-```
-📎 [View Source](../Code/sequence_submit_review.mmd)
+## 🔗 Source Code for login
+
+🖱️ Click to view: **[code/Login_Sequence_Diagram.mmd](..code/Login_Sequence_Diagram.mmd)**
+
+---
+
+## 🖼️ Sequence Diagram for Submit Review 
+
+🖱️ Click to view: **[UML/Submit_Review_Sequence_Diagram.svg](.UML/Submit_Review_Sequence_Diagram.svg)**
+
+---
+
+## 🔗 Source Code for Submit Review 
+
+🖱️ Click to view: **[code/Submit_Review_Sequence_Diagram.mmd](..code/Submit_Review_Sequence_Diagram.mmd)**
+
 
 ---
 
@@ -124,22 +133,23 @@ ReviewAPI --> User: ReviewConfirmation
 - Built using **Layered Architecture**
 - Applied the **Facade Pattern** for clarity and modularity
 - Created **UML Diagrams** to guide implementation
-- Designed for easy extension in the next project phases
-
-This documentation reflects our **real design decisions**, helping others understand the exact structure, naming, and flow of the HBnB Evolution system.
 
 ---
 
 📁 Directory Layout
+
 ```
 part1/
 ├── README.md
 ├── UML/
-│   └── package_diagram.png
+│   └── Package_Diagram.svg
+│   └── Class_Diagram.svg
+│   └── Login_Sequence_Diagram.svg
+│   └── Submit_Review_Sequence_Diagram.svg
 ├── Code/
-│   ├── class_diagram.mmd
-│   ├── sequence_login.mmd
-│   └── sequence_submit_review.mmd
+│   ├── Class_Diagram.mmd
+│   ├── Sequence_Login.mmd
+│   └── Sequence_Submit_Review.mmd
 ```
 
 © 2025 – Holberton School & Tuwaiq Academy
