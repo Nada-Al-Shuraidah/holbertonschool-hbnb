@@ -1,0 +1,12 @@
+sequenceDiagram
+participant User
+participant UserAPI
+participant UserService
+participant UserRepository
+
+User->>UserAPI: POST /login (credentials)
+UserAPI->>UserService: authenticate(credentials)
+UserService->>UserRepository: findByEmail(credentials.email)
+UserRepository-->>UserService: User
+UserService-->>UserAPI: AuthToken
+UserAPI-->>User: AuthToken
