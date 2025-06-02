@@ -32,7 +32,7 @@ This diagram shows the three-layer architecture and how the components interact.
 
 This diagram shows the main entities and their relationships.
 
-📎 **[View Class Diagram (Mermaid.js)](../code/Class_Diagram.mmd)**
+📎 **[View Class Diagram (Mermaid.js)](../Code/Class_Diagram.mmd)**
 
 - `User`: Has first name, last name, email, password, is_admin.
 - `Place`: Belongs to a user, includes title, description, price, location.
@@ -48,10 +48,10 @@ Entities follow business rules such as one-to-many or many-to-many relationships
 Sequence diagrams showing request/response flows across all layers.
 
 ### 🔐 Login Flow
-📎 **[View Login Sequence](../code/sequence_login.mmd)**
+📎 **[View Login Sequence](../Code/sequence_login.mmd)**
 
 ### ✍️ Submit Review Flow
-📎 **[View Submit Review Sequence](../code/sequence_submit_review.mmd)**
+📎 **[View Submit Review Sequence](../Code/sequence_submit_review.mmd)**
 
 More diagrams like Place Creation and Fetching Places can be added similarly.
 
