@@ -1,0 +1,66 @@
+classDiagram
+%% ------------------------
+%%        Classes
+%% ------------------------
+
+class User {
+    +UUID id
+    +String first_name
+    +String last_name
+    +String email
+    +String password
+    +bool is_admin
+    +DateTime created_at
+    +DateTime updated_at
+    +register()
+    +update_profile()
+    +delete_account()
+}
+
+class Place {
+    +UUID id
+    +String title
+    +Text description
+    +float price
+    +float latitude
+    +float longitude
+    +UUID owner_id
+    +DateTime created_at
+    +DateTime updated_at
+    +create()
+    +update()
+    +delete()
+}
+
+class Review {
+    +UUID id
+    +UUID user_id
+    +UUID place_id
+    +int rating
+    +Text comment
+    +DateTime created_at
+    +DateTime updated_at
+    +submit_review()
+    +edit_review()
+    +delete_review()
+}
+
+class Amenity {
+    +UUID id
+    +String name
+    +String description
+    +DateTime created_at
+    +DateTime updated_at
+    +create()
+    +update()
+    +delete()
+}
+
+%% ------------------------
+%%    Relationships
+%% ------------------------
+
+User "1" --> "many" Place : owns >
+User "1" --> "many" Review : writes >
+Place "1" --> "many" Review : has >
+Place "many" --> "many" Amenity : includes >
