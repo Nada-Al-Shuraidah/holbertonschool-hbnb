@@ -1,0 +1,12 @@
+sequenceDiagram
+participant User
+participant ReviewAPI
+participant ReviewService
+participant ReviewRepository
+
+User->>ReviewAPI: POST /submit_review (reviewData, token)
+ReviewAPI->>ReviewService: submitReview(reviewData, userID)
+ReviewService->>ReviewRepository: save(review)
+ReviewRepository-->>ReviewService: savedReview
+ReviewService-->>ReviewAPI: ReviewConfirmation
+ReviewAPI-->>User: ReviewConfirmation
