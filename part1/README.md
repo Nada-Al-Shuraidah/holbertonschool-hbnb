@@ -46,12 +46,22 @@ Each class handles its entity's logic (e.g., `User` validates emails, `Place` ca
 ### 📌 Purpose:
 Handles **storing and retrieving** data from the database or file system.
 
-### ⚙️ Components:
-- `DatabaseAccess`
-  - `saveData()`
-  - `retrieveData()`
+This **abstraction layer** makes the system flexible — allowing it to switch between different storage engines (like `FileStorage` and `DBStorage`) **without affecting the core logic** of the application. That’s a key part of keeping your code clean, testable, and modular.
 
-This abstraction layer ensures the system can switch between storage engines (like FileStorage or DBStorage) without changing core logic.
+> This layer works as the “bridge” between the logic and the actual data source.
+
+---
+
+### ⚙️ Components:
+- `PlaceRepository`
+- `UserRepository`
+- `ReviewRepository`
+- `AmenityRepository`
+
+Each repository class:
+- Implements methods
+- Communicates with the appropriate storage engine 
+- Is used by the **Business Logic Layer** to persist and retrieve model instances without needing to know the storage details
 
 ---
 
