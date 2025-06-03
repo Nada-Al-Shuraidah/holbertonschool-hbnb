@@ -103,7 +103,7 @@ This diagram illustrates the internal structure of the Business Logic Layer and 
 
 ## 🖼️ Source Code
 
-🖱️ Click to view: **[code/Class_Diagram.mmd](../code/Class_Diagram.mmd)**
+🖱️ Click to view: **[code/Class_Diagram.mmd](part1/code/Class_Diagram.mmd)**
 
 ---
 
