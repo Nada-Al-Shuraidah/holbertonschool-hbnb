@@ -50,8 +50,6 @@ This **abstraction layer** makes the system flexible — allowing it to switch b
 
 > This layer works as the “bridge” between the logic and the actual data source.
 
----
-
 ### ⚙️ Components:
 - `PlaceRepository`
 - `UserRepository`
@@ -103,7 +101,7 @@ This diagram illustrates the internal structure of the Business Logic Layer and 
 
 ## 🖼️ Source Code
 
-🖱️ Click to view: **[code/Class_Diagram.mmd](part1/code/Class_Diagram.mmd)**
+🖱️ Click to view: **[code/Class_Diagram.mmd](./code/Class_Diagram.mmd)**
 
 ---
 
