@@ -30,7 +30,6 @@ The **Facade Pattern** is a design pattern that provides a **unified and simplif
 
 > It acts like a receptionist: the API talks to the Facade, and the Facade knows how to handle everything inside without exposing the internal complexity which simplify the communication.
 
----
 
 ### 🧠 How We Apply It:
 For each resource (`User`, `Place`, `Review`, `Amenity`), there is a corresponding **Service class**:
@@ -44,8 +43,6 @@ These service classes:
 - Coordinate actions (e.g., creating, updating, or deleting objects)
 - Interact with the model and repository layers
 - Are the **only components** that the Presentation Layer talks to
-
----
 
 ### ✅ Why It’s Useful:
 - Keeps the API code simple and clean
