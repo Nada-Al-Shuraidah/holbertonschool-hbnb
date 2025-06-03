@@ -23,6 +23,36 @@ The entry point of the system. Handles user/API requests and responses.
 
 These APIs do **not** include logic. They receive HTTP requests (e.g., `POST /users`, `GET /places`) and delegate all processing to the Business Logic Layer via the **FacadeService**.
 
+## 📌 Note: The Facade Pattern in this Architecture
+
+### 🔷 What is the Facade Pattern?
+The **Facade Pattern** is a design pattern that provides a **unified and simplified interface** to a set of complex subsystems. In our case, it's used to **isolate the API layer** from the internal business rules and operations.
+
+> It acts like a receptionist: the API talks to the Facade, and the Facade knows how to handle everything inside without exposing the internal complexity which simplify the communication.
+
+---
+
+### 🧠 How We Apply It:
+For each resource (`User`, `Place`, `Review`, `Amenity`), there is a corresponding **Service class**:
+- `UserService`
+- `PlaceService`
+- `ReviewService`
+- `AmenityService`
+
+These service classes:
+- Contain the business rules and validation logic
+- Coordinate actions (e.g., creating, updating, or deleting objects)
+- Interact with the model and repository layers
+- Are the **only components** that the Presentation Layer talks to
+
+---
+
+### ✅ Why It’s Useful:
+- Keeps the API code simple and clean
+- Reduces direct coupling between layers
+- Makes the logic easier to maintain and test
+- Encourages **Separation of Concerns** inside the Business Logic Layer
+
 ---
 
 ## 🟦 Business Logic Layer
@@ -119,7 +149,7 @@ This diagrams shows how API calls interact with all layers.
 
 ## 🔗 Source Code for login
 
-🖱️ Click to view: **[code/Login_Sequence_Diagram.mmd](..code/Login_Sequence_Diagram.mmd)**
+🖱️ Click to view: **[code/Login_Sequence_Diagram.mmd](.code/Login_Sequence_Diagram.mmd)**
 
 ---
 
@@ -131,7 +161,7 @@ This diagrams shows how API calls interact with all layers.
 
 ## 🔗 Source Code for Submit Review 
 
-🖱️ Click to view: **[code/Submit_Review_Sequence_Diagram.mmd](..code/Submit_Review_Sequence_Diagram.mmd)**
+🖱️ Click to view: **[code/Submit_Review_Sequence_Diagram.mmd](.code/Submit_Review_Sequence_Diagram.mmd)**
 
 
 ---
