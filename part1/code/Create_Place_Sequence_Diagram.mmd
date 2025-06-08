@@ -1,0 +1,16 @@
+
+config:
+  theme: default
+---
+sequenceDiagram
+    participant User
+    participant PlaceAPI
+    participant PlaceService
+    participant PlaceRepository
+
+    User->>PlaceAPI: POST /places (placeData)
+    PlaceAPI->>PlaceService: createPlace(data, userID)
+    PlaceService->>PlaceRepository: save(place)
+    PlaceRepository-->>PlaceService: savedPlace
+    PlaceService-->>PlaceAPI: return success
+    PlaceAPI-->>User: place created confirmation
