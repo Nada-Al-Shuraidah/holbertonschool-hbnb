@@ -1,0 +1,12 @@
+sequenceDiagram
+    participant User
+    participant UserAPI
+    participant UserService
+    participant UserRepository
+
+    User->>UserAPI: POST /users (registrationData)
+    UserAPI->>UserService: registerUser(data)
+    UserService->>UserRepository: save(user)
+    UserRepository-->>UserService: savedUser
+    UserService-->>UserAPI: return success
+    UserAPI-->>User: confirmation message
