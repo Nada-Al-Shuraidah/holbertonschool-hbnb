@@ -186,20 +186,20 @@ For each use case, we describe how the layers communicate to fulfill the request
 
 - **👤 User Registration:**
 
-🖱️ Click to view: **[UML/User_Registration_Sequence_Diagram.svg](.UML/User_Registration_Sequence_Diagram.svg)**
+🖱️ Click to view: **[UML/User_Registration_Sequence_Diagram.svg](./UML/User_Registration_Sequence_Diagram.svg)**
 
  **🔐 User Login :** 
 
-🖱️ Click to view: **[UML/Login_Sequence_Diagram.svg](.UML/Login_Sequence_Diagram.svg)**
+🖱️ Click to view: **[UML/Login_Sequence_Diagram.svg](./UML/Login_Sequence_Diagram.svg)**
  
 - **🏠 Place Creation:**  
 
-🖱️ Click to view: **[UML/Create_Place_Sequence_Diagram.svg](.UML/Create_Place_Sequence_Diagram.svg)**
+🖱️ Click to view: **[UML/Create_Place_Sequence_Diagram.svg](./UML/Create_Place_Sequence_Diagram.svg)**
 
   
 - **📝 Review Submission:**  
  
-🖱️ Click to view: **[UML/Submit_Review_Sequence_Diagram.svg](.UML/Submit_Review_Sequence_Diagram.svg)**
+🖱️ Click to view: **[UML/Submit_Review_Sequence_Diagram.svg](./UML/Submit_Review_Sequence_Diagram.svg)**
 
 ---
 
@@ -210,7 +210,7 @@ Each API delegates to a **facade service**, which hides complexity and ensures c
 
 ## 🔗 Mermaid.js code for all the Sequence diagrams:
 
-🖱️ Click to view: **[code/](.code/)**
+🖱️ Click to view: **[code/](./code/)**
 
 ---
 
