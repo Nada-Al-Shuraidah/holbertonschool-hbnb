@@ -151,7 +151,7 @@ This ensures consistency and avoids repeating shared attributes in every class.
 
 ---
 
-### 🧩 **PlaceAmenity**
+### 🖇️ **PlaceAmenity**
 - **Purpose:** Represents the many-to-many relationship between `Place` and `Amenity`.
 - **Attributes:** `place_id`, `amenity_id`
 - **Methods:** `addAmenityToPlace()`, `deleteAmenityFromPlace()`
@@ -166,40 +166,51 @@ This ensures consistency and avoids repeating shared attributes in every class.
 
 ---
 
-## 🖼️ Source Code
-
-🖱️ Click to view: **[code/Class_Diagram.mmd](./code/Class_Diagram.mmd)**
-
----
-
 # 🔁 Task 2: API Sequence Diagrams
 
-This diagrams shows how API calls interact with all layers.
+This Sequence diagrams illustrate how requests move across the system layers when specific API calls are made. It visualizes the internal flow using the **Facade pattern**.
 
 ---
 
-## 🖼️ Sequence Diagram for Login
+## 🔶 Purpose:
+Show the **step-by-step interaction** between:
+- `Presentation Layer` (APIs)
+- `Business Logic Layer` (Services)
+- `Persistence Layer` (Repositories)
+
+For each use case, we describe how the layers communicate to fulfill the request.
+
+---
+
+## ⚙️ API Calls Covered:
+
+- **👤 User Registration:**
+
+🖱️ Click to view: **[UML/User_Registration_Sequence_Diagram.svg](.UML/User_Registration_Sequence_Diagram.svg)**
+
+ **🔐 User Login :** 
 
 🖱️ Click to view: **[UML/Login_Sequence_Diagram.svg](.UML/Login_Sequence_Diagram.svg)**
+ 
+- **🏠 Place Creation:**  
 
----
+🖱️ Click to view: **[UML/Create_Place_Sequence_Diagram.svg](.UML/Create_Place_Sequence_Diagram.svg)**
 
-## 🔗 Source Code for login
-
-🖱️ Click to view: **[code/Login_Sequence_Diagram.mmd](.code/Login_Sequence_Diagram.mmd)**
-
----
-
-## 🖼️ Sequence Diagram for Submit Review 
-
+  
+- **📝 Review Submission:**  
+ 
 🖱️ Click to view: **[UML/Submit_Review_Sequence_Diagram.svg](.UML/Submit_Review_Sequence_Diagram.svg)**
 
 ---
 
-## 🔗 Source Code for Submit Review 
+## 💡 Facade Role:
+Each API delegates to a **facade service**, which hides complexity and ensures clean interaction with the business logic. This keeps the APIs lightweight and maintainable.
 
-🖱️ Click to view: **[code/Submit_Review_Sequence_Diagram.mmd](.code/Submit_Review_Sequence_Diagram.mmd)**
+---
 
+## 🔗 Mermaid.js code for all the Sequence diagrams:
+
+🖱️ Click to view: **[code/](.code/)**
 
 ---
 
@@ -221,10 +232,24 @@ part1/
 │   └── Class_Diagram.svg
 │   └── Login_Sequence_Diagram.svg
 │   └── Submit_Review_Sequence_Diagram.svg
+│   └── Create_Place_Sequence_Diagram.svg
+│   └── User_Registration_Sequence_Diagram.svg
 ├── Code/
-│   ├── Class_Diagram.mmd
-│   ├── Sequence_Login.mmd
-│   └── Sequence_Submit_Review.mmd
+│   └── Login_Sequence_Diagram.mmd
+│   └── Submit_Review_Sequence_Diagram.mmd
+│   └── Create_Place_Sequence_Diagram.mmd
+│   └── User_Registration_Sequence_Diagram.mmd
+
 ```
+
+## 👩‍💻 Authors
+
+- **Haneen Aldawood** 
+ (https://github.com/hyvuz))
+- **Nada Alshuraidah** 
+ (https://github.com/Nada-Al-Shuraidah))
+- **Bushra Alshulail** 
+ (https://github.com/Bushraalshulail))
+  
 
 © 2025 – Holberton School & Tuwaiq Academy
