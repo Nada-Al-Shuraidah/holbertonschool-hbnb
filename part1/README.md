@@ -188,7 +188,7 @@ For each use case, we describe how the layers communicate to fulfill the request
 
 🖱️ Click to view: **[UML/User_Registration_Sequence_Diagram.svg](./UML/User_Registration_Sequence_Diagram.svg)**
 
- **🔐 User Login :** 
+- **🔐 User Login :** 
 
 🖱️ Click to view: **[UML/Login_Sequence_Diagram.svg](./UML/Login_Sequence_Diagram.svg)**
  
