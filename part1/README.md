@@ -98,26 +98,66 @@ Each repository class:
 
 # 🧩 Task 1: Business Logic Class Diagram
 
-This diagram illustrates the internal structure of the Business Logic Layer and how entities are related.
+This diagram illustrates the internal structure of the **Business Logic Layer**. It models all key entities, their attributes, and the relationships between them using correct UML practices.
 
-## 📌 Main Entities
+---
 
-- **User**
-  - Attributes: `id`, `first_name`, `last_name`, `email`, `password`, `is_admin`, `created_at`, `updated_at`
-  - Relationships: Can create Places and submit Reviews
+## 🧬 Inheritance
 
-- **Place**
-  - Attributes: `id`, `title`, `description`, `price`, `latitude`, `longitude`, `created_at`, `updated_at`
-  - Relationships: Belongs to a User, has many Amenities and Reviews
+All entities inherit from a shared `BaseModel`, which provides:
+- `id: UUID`
+- `created_at: dateTime`
+- `updated_at: dateTime`
 
-- **Amenity**
-  - Attributes: `id`, `name`, `description`, `created_at`, `updated_at`
-  - Relationships: Can belong to many Places
+This ensures consistency and avoids repeating shared attributes in every class.
 
-- **Review**
-  - Attributes: `id`, `text`, `rating`, `created_at`, `updated_at`
-  - Relationships: Linked to a User and a Place
- 
+---
+
+## 📌 Main Entities and Relationships
+
+### 👤 **User**
+- **Attributes:** `first_name`, `last_name`, `email`, `password`, `is_admin`
+- **Methods:** `register()`, `updateProfile()`, `deleteAccount()`, `displayPlaces()`
+- **Relationships:**
+  - 🔗 **Composition** with `Place` (a user owns one or more places)
+  - ➕ **Association** with `Review` (a user writes reviews)
+
+---
+
+### 🏠 **Place**
+- **Attributes:** `owner_id`, `title`, `description`, `price`, `latitude`, `longitude`
+- **Methods:** `createPlace()`, `updatePlace()`, `deletePlace()`, `displayReviews()`
+- **Relationships:**
+  - 🔗 Composed by a `User`
+  - ➕ Associated with multiple `Review` entries
+  - 🔁 Linked to `Amenity` through the `PlaceAmenity` class (many-to-many)
+
+---
+
+### ✨ **Amenity**
+- **Attributes:** `name`, `description`
+- **Methods:** `createAmenity()`, `updateAmenity()`, `deleteAmenity()`
+- **Relationships:**
+  - 🔁 Linked to `Place` through the `PlaceAmenity` class (many-to-many)
+
+---
+
+### 📝 **Review**
+- **Attributes:** `user_id`, `place_id`, `rating`, `comment`
+- **Methods:** `submitReview()`, `editReview()`, `deleteReview()`
+- **Relationships:**
+  - ➕ Associated with one `User`
+  - ➕ Associated with one `Place`
+
+---
+
+### 🧩 **PlaceAmenity**
+- **Purpose:** Represents the many-to-many relationship between `Place` and `Amenity`.
+- **Attributes:** `place_id`, `amenity_id`
+- **Methods:** `addAmenityToPlace()`, `deleteAmenityFromPlace()`
+- **Relationships:**
+  - 🔄 Links a single `Place` with a single `Amenity`
+
 ---
 
 ## 🖼️ Class Diagram 
