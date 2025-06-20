@@ -32,24 +32,18 @@ class Place(BaseModel):
         self.amenities.append(amenity)
 
     def display_reviews(self):
-        """
-        Display all reviews for this place.
-        """
+        """Print reviews or a “no reviews” message."""
         if not self.reviews:
             print("There are no reviews for this place.")
             return
-
-        for review in self.reviews:
-            print(f"{review.user.first_name}: {review.text}")
+        for rev in self.reviews:
+            print(f"{rev.user.first_name}: {rev.text}")
 
     def display_amenities(self):
-        """
-        Display all amenities associated with this place.
-        """
+        """Print amenities or a “no amenities” message."""
         if not self.amenities:
-            print("There are no amenities in this place.")
+            print("There are no amenities for this place.")
             return
-
         print("Amenities:")
-        for amenity in self.amenities:
-            print(f" - {amenity.name}")
+        for am in self.amenities:
+            print(f" - {am.name}")
