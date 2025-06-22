@@ -23,9 +23,15 @@ class HBnBFacade:
         pass
 
     def update_user(self, user_id, user_data):
-        user = self.user_repo.get(user_id)
-        if not user:
-            return None
-        for key, value in user_data.items():
-            setattr(user, key, value)
-        return user
+    user = self.user_repo.get(user_id)
+    if not user:
+        return None
+
+    # Only allow these fields to change
+    for field in ('first_name', 'last_name', 'email'):
+        if field in user_data:
+            setattr(user, field, user_data[field])
+
+    # Persist the changes
+    self.user_repo.save(user)
+    return user
