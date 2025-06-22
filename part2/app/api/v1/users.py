@@ -4,7 +4,7 @@ from app.services.facade import HBnBFacade
 api = Namespace('users', description='User operations')
 facade = HBnBFacade()
 
-# 📦 1. Expanded the model to include the read-only 'id' field
+# Expanded the model to include the read-only 'id' field
 user_model = api.model('User', {
     'id': fields.String(readOnly=True, description='User unique identifier'),
     'first_name': fields.String(required=True, description='First name of the user'),
@@ -12,7 +12,7 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
 })
 
-# 📦 2. Separate “create” model so we don’t require an 'id' on input
+# Separate “create” model so we don’t require an 'id' on input
 create_user_model = api.model('CreateUser', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
