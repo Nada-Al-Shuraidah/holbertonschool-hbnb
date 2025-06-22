@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask import request
 from app.services import facade
 
 api = Namespace('users', description='User operations')
@@ -15,20 +16,23 @@ class UserList(Resource):
     @api.expect(user_model, validate=True)
     @api.response(201, 'User successfully created')
     @api.response(400, 'Email already registered')
-    @api.response(400, 'Invalid input data')
     def post(self):
         """Register a new user"""
-        user_data = api.payload
+        user_data = request.get_json()
 
-        # Simulate email uniqueness check (to be replaced by real validation with persistence)
         existing_user = facade.get_user_by_email(user_data['email'])
         if existing_user:
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(user_data)
-        return {'id': new_user.id, 'first_name': new_user.first_name, 'last_name': new_user.last_name, 'email': new_user.email}, 201
+        return {
+            'id': new_user.id,
+            'first_name': new_user.first_name,
+            'last_name': new_user.last_name,
+            'email': new_user.email
+        }, 201
 
-@api.route('/<user_id>')
+@api.route('/<string:user_id>')
 class UserResource(Resource):
     @api.response(200, 'User details retrieved successfully')
     @api.response(404, 'User not found')
@@ -37,4 +41,31 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             return {'error': 'User not found'}, 404
-        return {'id': user.id, 'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email}, 200
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        }, 200
+
+    @api.expect(user_model, validate=True)
+    @api.response(200, 'User updated successfully')
+    @api.response(404, 'User not found')
+    def put(self, user_id):
+        """Update user details"""
+        user_data = request.get_json()
+        user = facade.get_user(user_id)
+        if not user:
+            return {'error': 'User not found'}, 404
+
+        # Update fields
+        user.first_name = user_data['first_name']
+        user.last_name = user_data['last_name']
+        user.email = user_data['email']
+
+        return {
+            'id': user.id,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'email': user.email
+        }, 200
