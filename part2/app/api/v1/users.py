@@ -1,71 +1,69 @@
 from flask_restx import Namespace, Resource, fields
-from flask import request
-from app.services import facade
+from app.services.facade import HBnBFacade
 
 api = Namespace('users', description='User operations')
+facade = HBnBFacade()
 
-# Define the user model for input validation and documentation
+# 📦 1. Expanded the model to include the read-only 'id' field
 user_model = api.model('User', {
+    'id': fields.String(readOnly=True, description='User unique identifier'),
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user')
+    'email': fields.String(required=True, description='Email of the user'),
+})
+
+# 📦 2. Separate “create” model so we don’t require an 'id' on input
+create_user_model = api.model('CreateUser', {
+    'first_name': fields.String(required=True, description='First name of the user'),
+    'last_name': fields.String(required=True, description='Last name of the user'),
+    'email': fields.String(required=True, description='Email of the user'),
 })
 
 @api.route('/')
 class UserList(Resource):
-    @api.expect(user_model, validate=True)
-    @api.response(201, 'User successfully created')
+    @api.marshal_list_with(user_model)
+    def get(self):
+        """List all users"""
+        # Calls a facade method you’ll need to implement:
+        # def get_all_users(self) -> List[User]
+        return facade.get_all_users()
+
+    @api.expect(create_user_model, validate=True)
+    @api.marshal_with(user_model, code=201)
     @api.response(400, 'Email already registered')
     def post(self):
         """Register a new user"""
-        user_data = request.get_json()
+        payload = api.payload
 
-        existing_user = facade.get_user_by_email(user_data['email'])
-        if existing_user:
+        # Reuse your existing facade method to check uniqueness
+        if facade.get_user_by_email(payload['email']):
             return {'error': 'Email already registered'}, 400
 
-        new_user = facade.create_user(user_data)
-        return {
-            'id': new_user.id,
-            'first_name': new_user.first_name,
-            'last_name': new_user.last_name,
-            'email': new_user.email
-        }, 201
+        new_user = facade.create_user(payload)
+        # facade.create_user must save the user and return the User object
+        return new_user.to_dict(), 201
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
-    @api.response(200, 'User details retrieved successfully')
+    @api.marshal_with(user_model)
     @api.response(404, 'User not found')
     def get(self, user_id):
         """Get user details by ID"""
         user = facade.get_user(user_id)
         if not user:
-            return {'error': 'User not found'}, 404
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        }, 200
+            api.abort(404, 'User not found')
+        return user.to_dict()
 
-    @api.expect(user_model, validate=True)
-    @api.response(200, 'User updated successfully')
+    @api.expect(create_user_model, validate=True)
+    @api.marshal_with(user_model)
     @api.response(404, 'User not found')
     def put(self, user_id):
         """Update user details"""
-        user_data = request.get_json()
-        user = facade.get_user(user_id)
-        if not user:
-            return {'error': 'User not found'}, 404
+        data = api.payload
 
-        # Update fields
-        user.first_name = user_data['first_name']
-        user.last_name = user_data['last_name']
-        user.email = user_data['email']
+        # Delegate to the facade so it can whitelist fields and persist:
+        updated_user = facade.update_user(user_id, data)
+        if not updated_user:
+            api.abort(404, 'User not found')
 
-        return {
-            'id': user.id,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'email': user.email
-        }, 200
+        return updated_user.to_dict()
