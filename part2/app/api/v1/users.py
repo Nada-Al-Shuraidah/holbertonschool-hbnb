@@ -12,7 +12,7 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
 })
 
-# Input model (for create/update—no id)
+# Input model for create/update (no id field on input)
 create_user_model = api.model('CreateUser', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
@@ -35,6 +35,7 @@ class UserList(Resource):
         if facade.get_user_by_email(payload['email']):
             return {'error': 'Email already registered'}, 400
         new_user = facade.create_user(payload)
+        # Return the User instance directly—Flask-RESTx will serialize it
         return new_user, 201
 
 @api.route('/<string:user_id>')
@@ -53,7 +54,7 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     def put(self, user_id):
         """Update user details"""
-        updated_user = facade.update_user(user_id, api.payload)
-        if not updated_user:
+        updated = facade.update_user(user_id, api.payload)
+        if not updated:
             api.abort(404, 'User not found')
-        return updated_user
+        return updated
