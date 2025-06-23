@@ -4,7 +4,7 @@ from app.services.facade import HBnBFacade
 api = Namespace('users', description='User operations')
 facade = HBnBFacade()
 
-# Model including read-only 'id'
+# Output model (includes read-only id)
 user_model = api.model('User', {
     'id': fields.String(readOnly=True, description='User unique identifier'),
     'first_name': fields.String(required=True, description='First name of the user'),
@@ -12,11 +12,11 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
 })
 
-# Input model for create/update (no 'id')
+# Input model (for create/update—no id)
 create_user_model = api.model('CreateUser', {
-    'first_name': fields.String(required=True, description='First name'),
-    'last_name':  fields.String(required=True, description='Last name'),
-    'email':      fields.String(required=True, description='Email'),
+    'first_name': fields.String(required=True, description='First name of the user'),
+    'last_name': fields.String(required=True, description='Last name of the user'),
+    'email': fields.String(required=True, description='Email of the user'),
 })
 
 @api.route('/')
@@ -34,7 +34,6 @@ class UserList(Resource):
         payload = api.payload
         if facade.get_user_by_email(payload['email']):
             return {'error': 'Email already registered'}, 400
-
         new_user = facade.create_user(payload)
         return new_user, 201
 
@@ -58,6 +57,3 @@ class UserResource(Resource):
         if not updated_user:
             api.abort(404, 'User not found')
         return updated_user
-
-
-        return updated
