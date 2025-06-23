@@ -1,7 +1,7 @@
 # app/services/facade.py
 
 from app.models.user import User
-from app.services.in_memory_repository import InMemoryRepository
+from app.persistence.user_repository import UserRepository
 
 class HBnBFacade:
     def __init__(self):
