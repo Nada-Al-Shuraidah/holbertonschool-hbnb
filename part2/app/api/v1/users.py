@@ -4,7 +4,7 @@ from app.services.facade import HBnBFacade
 api = Namespace('users', description='User operations')
 facade = HBnBFacade()
 
-# Expanded the model to include the read-only 'id' field
+# Model including read-only 'id'
 user_model = api.model('User', {
     'id': fields.String(readOnly=True, description='User unique identifier'),
     'first_name': fields.String(required=True, description='First name of the user'),
@@ -12,11 +12,11 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
 })
 
-# Separate “create” model so we don’t require an 'id' on input
+# Input model for create/update (no 'id')
 create_user_model = api.model('CreateUser', {
-    'first_name': fields.String(required=True, description='First name of the user'),
-    'last_name': fields.String(required=True, description='Last name of the user'),
-    'email': fields.String(required=True, description='Email of the user'),
+    'first_name': fields.String(required=True, description='First name'),
+    'last_name':  fields.String(required=True, description='Last name'),
+    'email':      fields.String(required=True, description='Email'),
 })
 
 @api.route('/')
@@ -24,8 +24,6 @@ class UserList(Resource):
     @api.marshal_list_with(user_model)
     def get(self):
         """List all users"""
-        # Calls a facade method you’ll need to implement:
-        # def get_all_users(self) -> List[User]
         return facade.get_all_users()
 
     @api.expect(create_user_model, validate=True)
@@ -34,14 +32,11 @@ class UserList(Resource):
     def post(self):
         """Register a new user"""
         payload = api.payload
-
-        # Reuse your existing facade method to check uniqueness
         if facade.get_user_by_email(payload['email']):
             return {'error': 'Email already registered'}, 400
 
         new_user = facade.create_user(payload)
-        # facade.create_user must save the user and return the User object
-        return new_user.to_dict(), 201
+        return new_user, 201
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
@@ -59,11 +54,10 @@ class UserResource(Resource):
     @api.response(404, 'User not found')
     def put(self, user_id):
         """Update user details"""
-        data = api.payload
-
-        # Delegate to the facade so it can whitelist fields and persist:
-        updated_user = facade.update_user(user_id, data)
+        updated_user = facade.update_user(user_id, api.payload)
         if not updated_user:
             api.abort(404, 'User not found')
+        return updated_user
+
 
         return updated
