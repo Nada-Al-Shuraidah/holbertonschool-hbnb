@@ -52,7 +52,7 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             api.abort(404, 'User not found')
-        return user.to_dict()
+        return user
 
     @api.expect(create_user_model, validate=True)
     @api.marshal_with(user_model)
@@ -66,4 +66,4 @@ class UserResource(Resource):
         if not updated_user:
             api.abort(404, 'User not found')
 
-        return updated_user.to_dict()
+        return updated
