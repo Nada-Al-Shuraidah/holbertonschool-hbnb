@@ -7,5 +7,9 @@ def create_app():
     api = Api(app, version='1.0', title='HBnB API', description='HBnB Application API')
 
     # Register the users namespace
-    api.add_namespace(users_ns, path='/api/v1/users') 
+    api.add_namespace(users_ns, path='/api/v1/users')
+
+    # Debug: show all registered URLs and their allowed methods
+    print(app.url_map)
+
     return app
