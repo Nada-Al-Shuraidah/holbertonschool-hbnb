@@ -2,6 +2,7 @@
 
 from app.models.user import User
 from app.persistence.repository import InMemoryRepository   # ← fixed import
+from app.models.amenity import Amenity
 
 class HBnBFacade:
     def __init__(self):
@@ -35,3 +36,28 @@ class HBnBFacade:
         # Persist by re-adding (overwrites in-memory)
         self.user_repo.add(user)
         return user
+        
+
+def create_amenity(self, amenity_data):
+        amenity = Amenity(**amenity_data)
+        self.amenity_repo.add(amenity)
+        return amenity
+
+    def get_amenity(self, amenity_id):
+        return self.amenity_repo.get(amenity_id)
+
+    def get_all_amenities(self):
+        return self.amenity_repo.get_all()
+
+    def update_amenity(self, amenity_id, amenity_data):
+        amenity = self.amenity_repo.get(amenity_id)
+        if not amenity:
+            return None
+
+        if 'name' in amenity_data:
+            if len(amenity_data['name']) > 50:
+                raise ValueError("Name must be 50 characters or fewer.")
+            amenity.name = amenity_data['name']
+
+        self.amenity_repo.add(amenity)
+        return amenity
