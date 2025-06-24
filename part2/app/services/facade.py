@@ -38,7 +38,7 @@ class HBnBFacade:
         return user
         
 
-def create_amenity(self, amenity_data):
+    def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
         self.amenity_repo.add(amenity)
         return amenity
