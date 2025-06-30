@@ -1,19 +1,16 @@
-# app/services/facade.py
-
 from app.models.user import User
-from app.persistence.repository import InMemoryRepository   # ← fixed import
 from app.models.amenity import Amenity
 from app.models.place import Place
+from app.models.review import Review
+from app.persistence.repository import InMemoryRepository
 
 class HBnBFacade:
     def __init__(self):
-        # now using your InMemoryRepository from persistence/repository.py
         self.user_repo = InMemoryRepository()
         self.amenity_repo = InMemoryRepository()
         self.place_repo = InMemoryRepository()
+        self.review_repo = InMemoryRepository()
 
-
-    
     def create_user(self, user_data):
         user = User(**user_data)
         self.user_repo.add(user)
@@ -33,15 +30,12 @@ class HBnBFacade:
         if not user:
             return None
 
-        # Only whitelist these fields
         for field in ('first_name', 'last_name', 'email'):
             if field in data:
                 setattr(user, field, data[field])
 
-        # Persist by re-adding (overwrites in-memory)
         self.user_repo.add(user)
         return user
-        
 
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
@@ -67,7 +61,6 @@ class HBnBFacade:
         self.amenity_repo.add(amenity)
         return amenity
 
-    
     def create_place(self, place_data):
         try:
             owner = self.user_repo.get(place_data['owner_id'])
@@ -122,3 +115,60 @@ class HBnBFacade:
 
         self.place_repo.add(place)
         return place
+
+    def create_review(self, review_data):
+        user = self.user_repo.get(review_data['user_id'])
+        place = self.place_repo.get(review_data['place_id'])
+        if not user or not place:
+            raise ValueError("User or Place not found")
+
+        rating = int(review_data['rating'])
+        if not 1 <= rating <= 5:
+            raise ValueError("Rating must be between 1 and 5")
+
+        review = Review(
+            text=review_data['text'],
+            rating=rating,
+            place=place,
+            user=user
+        )
+        self.review_repo.add(review)
+        place.add_review(review)
+        return review
+
+    def get_review(self, review_id):
+        return self.review_repo.get(review_id)
+
+    def get_all_reviews(self):
+        return self.review_repo.get_all()
+
+    def get_reviews_by_place(self, place_id):
+        place = self.place_repo.get(place_id)
+        if not place:
+            raise ValueError("Place not found")
+        return place.reviews
+
+    def update_review(self, review_id, review_data):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return None
+
+        if 'text' in review_data:
+            review.text = review_data['text']
+        if 'rating' in review_data:
+            rating = int(review_data['rating'])
+            if not 1 <= rating <= 5:
+                raise ValueError("Rating must be between 1 and 5")
+            review.rating = rating
+
+        self.review_repo.add(review)
+        return review
+
+    def delete_review(self, review_id):
+        review = self.review_repo.get(review_id)
+        if not review:
+            return False
+
+        review.place.reviews = [r for r in review.place.reviews if r.id != review_id]
+        self.review_repo.delete(review_id)
+        return True
