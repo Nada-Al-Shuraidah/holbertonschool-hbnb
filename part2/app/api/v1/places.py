@@ -15,6 +15,13 @@ user_model = api.model('PlaceUser', {
     'email': fields.String(description='Email')
 })
 
+review_model = api.model('PlaceReview', {
+    'id': fields.String(description='Review ID'),
+    'text': fields.String(description='Text of the review'),
+    'rating': fields.Integer(description='Rating of the place (1-5)'),
+    'user_id': fields.String(description='ID of the user')
+})
+
 place_output = api.model('PlaceOut', {
     'id': fields.String(description='Place ID'),
     'title': fields.String(description='Title'),
@@ -23,7 +30,8 @@ place_output = api.model('PlaceOut', {
     'latitude': fields.Float(description='Latitude'),
     'longitude': fields.Float(description='Longitude'),
     'owner': fields.Nested(user_model),
-    'amenities': fields.List(fields.Nested(amenity_model))
+    'amenities': fields.List(fields.Nested(amenity_model)),
+    'reviews': fields.List(fields.Nested(review_model))  # ✅ تمت الإضافة هنا
 })
 
 place_input = api.model('PlaceIn', {
@@ -51,7 +59,6 @@ class PlaceList(Resource):
     def get(self):
         return [serialize_place(p) for p in facade.get_all_places()]
 
-
 @api.route('/<string:place_id>')
 class PlaceResource(Resource):
     @api.marshal_with(place_output)
@@ -71,7 +78,6 @@ class PlaceResource(Resource):
         except ValueError as ve:
             return {'error': str(ve)}, 400
 
-
 def serialize_place(place):
     return {
         'id': place.id,
@@ -86,5 +92,14 @@ def serialize_place(place):
             'last_name': place.owner.last_name,
             'email': place.owner.email
         },
-        'amenities': [{'id': a.id, 'name': a.name} for a in place.amenities]
+        'amenities': [{'id': a.id, 'name': a.name} for a in place.amenities],
+        'reviews': [
+            {
+                'id': r.id,
+                'text': r.text,
+                'rating': r.rating,
+                'user_id': r.user.id if r.user else None
+            }
+            for r in getattr(place, 'reviews', [])
+        ]
     }
