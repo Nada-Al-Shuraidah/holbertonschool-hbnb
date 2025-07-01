@@ -1,4 +1,4 @@
-import re
+models/user.py import re
 from .base_model import BaseModel
 
 # Simple email regex: something@something.something
