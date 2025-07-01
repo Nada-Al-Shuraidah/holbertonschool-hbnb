@@ -51,11 +51,19 @@ class User(BaseModel):
             self.password_hash = None
 
     def set_password(self, password):
+        """Hashes the password and stores it."""
         if not password:
             raise ValueError("Password cannot be empty.")
         self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
+        """Checks if a plain password matches the hashed one."""
         if not self.password_hash:
             return False
         return bcrypt.check_password_hash(self.password_hash, password)
+
+    def to_dict(self):
+        """Returns a dictionary representation without sensitive fields."""
+        data = super().to_dict()
+        data.pop('password_hash', None)  # Don't expose password hash
+        return data
