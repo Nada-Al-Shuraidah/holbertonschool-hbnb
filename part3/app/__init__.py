@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restx import Api
-from flask_jwt_extended import JWTManager
+from flask_jwt_extended import JWTManager  # تعديل بشرى
+from config import DevelopmentConfig  # استيراد كلاس الكونفيج الافتراضي . تعديل ندى
 
 from app.api.v1.users import api as users_ns
 from app.api.v1.amenities import api as amenities_ns
