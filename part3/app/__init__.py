@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_restx import Api
-from flask_jwt_extended import JWTManager  # تعديل بشرى
+from flask_jwt_extended import JWTManager
 from flask_bcrypt import Bcrypt  # ندى
 from config import DevelopmentConfig  # استيراد كلاس الكونفيج الافتراضي . تعديل ندى
 
@@ -11,6 +11,7 @@ from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns 
 
 bcrypt = Bcrypt()  # ندى
+jwt = JWTManager()
 def create_app(config_class='config.DevelopmentConfig'):
     app = Flask(__name__)
     app.config.from_object(config_class)
