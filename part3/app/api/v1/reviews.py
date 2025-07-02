@@ -1,4 +1,5 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('reviews', description='Review operations')
@@ -18,9 +19,14 @@ review_output = api.inherit('ReviewOut', review_model, {
 class ReviewList(Resource):
     @api.expect(review_model)
     @api.marshal_with(review_output, code=201)
+    @jwt_required()
     def post(self):
+        current_user = get_jwt_identity()
+        payload = api.payload
+        if payload['user_id'] != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
         try:
-            review = facade.create_review(api.payload)
+            review = facade.create_review(payload)
             return review, 201
         except ValueError as ve:
             return {'error': str(ve)}, 400
@@ -40,18 +46,29 @@ class ReviewResource(Resource):
         return review
 
     @api.expect(review_model)
+    @jwt_required()
     def put(self, review_id):
+        current_user = get_jwt_identity()
+        review = facade.get_review(review_id)
+        if not review:
+            api.abort(404, "Review not found")
+        if review.user_id != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
         try:
             updated = facade.update_review(review_id, api.payload)
-            if not updated:
-                api.abort(404, "Review not found")
             return {'message': 'Review updated successfully'}, 200
         except ValueError as ve:
             return {'error': str(ve)}, 400
 
+    @jwt_required()
     def delete(self, review_id):
-        if not facade.delete_review(review_id):
+        current_user = get_jwt_identity()
+        review = facade.get_review(review_id)
+        if not review:
             api.abort(404, "Review not found")
+        if review.user_id != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
+        facade.delete_review(review_id)
         return {'message': 'Review deleted successfully'}, 200
 
 
