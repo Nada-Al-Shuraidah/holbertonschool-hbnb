@@ -1,8 +1,10 @@
 from flask_restx import Namespace, Resource, fields
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.services import facade
 
 api = Namespace('places', description='Place operations')
 
+# Models
 amenity_model = api.model('PlaceAmenity', {
     'id': fields.String(description='Amenity ID'),
     'name': fields.String(description='Amenity name')
@@ -40,44 +42,62 @@ place_input = api.model('PlaceIn', {
     'price': fields.Float(required=True),
     'latitude': fields.Float(required=True),
     'longitude': fields.Float(required=True),
-    'owner_id': fields.String(required=True),
     'amenities': fields.List(fields.String, required=True)
 })
 
+# Routes
 @api.route('/')
 class PlaceList(Resource):
+    @api.marshal_list_with(place_output)
+    def get(self):
+        """Public: Get all places"""
+        return [serialize_place(p) for p in facade.get_all_places()]
+
     @api.expect(place_input)
     @api.marshal_with(place_output, code=201)
+    @jwt_required()
     def post(self):
+        """Authenticated: Create new place"""
+        payload = api.payload
+        current_user = get_jwt_identity()
+        payload['owner_id'] = current_user['id']  # Force ownership
         try:
-            place = facade.create_place(api.payload)
+            place = facade.create_place(payload)
             return serialize_place(place), 201
         except ValueError as ve:
             return {'error': str(ve)}, 400
 
-    @api.marshal_list_with(place_output)
-    def get(self):
-        return [serialize_place(p) for p in facade.get_all_places()]
 
 @api.route('/<string:place_id>')
 class PlaceResource(Resource):
     @api.marshal_with(place_output)
     def get(self, place_id):
+        """Public: Get place details"""
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
         return serialize_place(place)
 
     @api.expect(place_input)
+    @jwt_required()
     def put(self, place_id):
+        """Authenticated: Update owned place"""
+        current_user = get_jwt_identity()
+        place = facade.get_place(place_id)
+        if not place:
+            api.abort(404, "Place not found")
+        if str(place.owner.id) != current_user['id']:
+            return {'error': 'Unauthorized action'}, 403
+
+        payload = api.payload
         try:
-            updated = facade.update_place(place_id, api.payload)
-            if not updated:
-                api.abort(404, "Place not found")
+            updated = facade.update_place(place_id, payload)
             return {'message': 'Place updated successfully'}, 200
         except ValueError as ve:
             return {'error': str(ve)}, 400
 
+
+# Serialization helper
 def serialize_place(place):
     return {
         'id': place.id,
