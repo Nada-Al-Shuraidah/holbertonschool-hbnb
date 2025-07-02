@@ -31,7 +31,7 @@ place_output = api.model('PlaceOut', {
     'longitude': fields.Float(description='Longitude'),
     'owner': fields.Nested(user_model),
     'amenities': fields.List(fields.Nested(amenity_model)),
-    'reviews': fields.List(fields.Nested(review_model))  # ✅ تمت الإضافة هنا
+    'reviews': fields.List(fields.Nested(review_model))
 })
 
 place_input = api.model('PlaceIn', {
