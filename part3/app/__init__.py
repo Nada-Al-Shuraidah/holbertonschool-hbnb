@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restx import Api
 from flask_jwt_extended import JWTManager  # تعديل بشرى
+from flask_bcrypt import Bcrypt  # ندى
 from config import DevelopmentConfig  # استيراد كلاس الكونفيج الافتراضي . تعديل ندى
 
 from app.api.v1.users import api as users_ns
@@ -9,6 +10,7 @@ from app.api.v1.places import api as places_ns
 from app.api.v1.reviews import api as reviews_ns
 from app.api.v1.auth import api as auth_ns 
 
+bcrypt = Bcrypt()  # ندى
 def create_app(config_class='config.DevelopmentConfig'):
     app = Flask(__name__)
     app.config.from_object(config_class)
@@ -24,6 +26,7 @@ def create_app(config_class='config.DevelopmentConfig'):
     api.add_namespace(places_ns, path='/api/v1/places')
     api.add_namespace(reviews_ns, path='/api/v1/reviews')
     api.add_namespace(auth_ns, path='/api/v1/auth')
-
+    
+    bcrypt.init_app(app)  # ندى
     print(app.url_map)
     return app
