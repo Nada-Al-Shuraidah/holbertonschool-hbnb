@@ -4,7 +4,7 @@ from app.services.facade import HBnBFacade
 api = Namespace('users', description='User operations')
 facade = HBnBFacade()
 
-# Output model (includes read-only id)
+# Output model (excludes password)
 user_model = api.model('User', {
     'id': fields.String(readOnly=True, description='User unique identifier'),
     'first_name': fields.String(required=True, description='First name of the user'),
@@ -12,11 +12,12 @@ user_model = api.model('User', {
     'email': fields.String(required=True, description='Email of the user'),
 })
 
-# Input model for create/update (no id field on input)
+# Input model (includes password)
 create_user_model = api.model('CreateUser', {
     'first_name': fields.String(required=True, description='First name of the user'),
     'last_name': fields.String(required=True, description='Last name of the user'),
     'email': fields.String(required=True, description='Email of the user'),
+    'password': fields.String(required=True, description='Password of the user'),
 })
 
 @api.route('/')
@@ -24,7 +25,8 @@ class UserList(Resource):
     @api.marshal_list_with(user_model)
     def get(self):
         """List all users"""
-        return facade.get_all_users()
+        users = facade.get_all_users()
+        return [user.to_dict() for user in users]
 
     @api.expect(create_user_model, validate=True)
     @api.marshal_with(user_model, code=201)
@@ -35,8 +37,7 @@ class UserList(Resource):
         if facade.get_user_by_email(payload['email']):
             return {'error': 'Email already registered'}, 400
         new_user = facade.create_user(payload)
-        # Return the User instance directly—Flask-RESTx will serialize it
-        return new_user, 201
+        return new_user.to_dict(), 201
 
 @api.route('/<string:user_id>')
 class UserResource(Resource):
@@ -47,7 +48,7 @@ class UserResource(Resource):
         user = facade.get_user(user_id)
         if not user:
             api.abort(404, 'User not found')
-        return user
+        return user.to_dict()
 
     @api.expect(create_user_model, validate=True)
     @api.marshal_with(user_model)
@@ -57,4 +58,4 @@ class UserResource(Resource):
         updated = facade.update_user(user_id, api.payload)
         if not updated:
             api.abort(404, 'User not found')
-        return updated
+        return updated.to_dict()
