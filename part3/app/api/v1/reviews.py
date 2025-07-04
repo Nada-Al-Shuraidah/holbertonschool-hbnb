@@ -22,9 +22,13 @@ class ReviewList(Resource):
     @jwt_required()
     def post(self):
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
         payload = api.payload
-        if payload['user_id'] != current_user['id']:
+
+        # فقط المستخدم العادي يُجبر على كتابة مراجعة باسمه
+        if not is_admin and payload['user_id'] != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
+
         try:
             review = facade.create_review(payload)
             return review, 201
@@ -49,11 +53,15 @@ class ReviewResource(Resource):
     @jwt_required()
     def put(self, review_id):
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
         review = facade.get_review(review_id)
+
         if not review:
             api.abort(404, "Review not found")
-        if review.user_id != current_user['id']:
+
+        if not is_admin and review.user_id != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
+
         try:
             updated = facade.update_review(review_id, api.payload)
             return {'message': 'Review updated successfully'}, 200
@@ -63,11 +71,15 @@ class ReviewResource(Resource):
     @jwt_required()
     def delete(self, review_id):
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
         review = facade.get_review(review_id)
+
         if not review:
             api.abort(404, "Review not found")
-        if review.user_id != current_user['id']:
+
+        if not is_admin and review.user_id != current_user['id']:
             return {'error': 'Unauthorized action'}, 403
+
         facade.delete_review(review_id)
         return {'message': 'Review deleted successfully'}, 200
 
