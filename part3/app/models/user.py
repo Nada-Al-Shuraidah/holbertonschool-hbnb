@@ -1,5 +1,5 @@
 import re
-from app import db, bcrypt
+from app.extensions import db, bcrypt
 from .base_model import BaseModel
 from sqlalchemy.orm import validates
 
