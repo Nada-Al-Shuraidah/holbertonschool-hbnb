@@ -3,11 +3,12 @@ from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
 from app.persistence.repository import SQLAlchemyRepository
+from app.services.repositories.user_repository import UserRepository
 from app import bcrypt
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = SQLAlchemyRepository(User)
+        self.user_repo = UserRepository()
         self.amenity_repo = SQLAlchemyRepository(Amenity)
         self.place_repo = SQLAlchemyRepository(Place)
         self.review_repo = SQLAlchemyRepository(Review)
@@ -17,10 +18,8 @@ class HBnBFacade:
         if not password:
             raise ValueError("Password is required")
 
-        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        user_data['password_hash'] = hashed_password
-
         user = User(**user_data)
+        user.hash_password(password)
         self.user_repo.add(user)
         return user
 
@@ -28,7 +27,7 @@ class HBnBFacade:
         return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
-        return self.user_repo.get_by_attribute('email', email)
+        return self.user_repo.get_user_by_email(email)
 
     def get_all_users(self):
         return self.user_repo.get_all()
@@ -43,8 +42,7 @@ class HBnBFacade:
                 setattr(user, field, data[field])
 
         if 'password' in data:
-            hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
-            user.password_hash = hashed_password
+            user.hash_password(data['password'])
 
         self.user_repo.add(user)
         return user
