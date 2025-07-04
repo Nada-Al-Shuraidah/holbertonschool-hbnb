@@ -2,22 +2,21 @@ from app.models.user import User
 from app.models.amenity import Amenity
 from app.models.place import Place
 from app.models.review import Review
-from app.persistence.repository import InMemoryRepository
+from app.persistence.repository import SQLAlchemyRepository
 from app import bcrypt
 
 class HBnBFacade:
     def __init__(self):
-        self.user_repo = InMemoryRepository()
-        self.amenity_repo = InMemoryRepository()
-        self.place_repo = InMemoryRepository()
-        self.review_repo = InMemoryRepository()
+        self.user_repo = SQLAlchemyRepository(User)
+        self.amenity_repo = SQLAlchemyRepository(Amenity)
+        self.place_repo = SQLAlchemyRepository(Place)
+        self.review_repo = SQLAlchemyRepository(Review)
 
     def create_user(self, user_data):
         password = user_data.pop('password', None)
         if not password:
             raise ValueError("Password is required")
 
-       
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
         user_data['password_hash'] = hashed_password
 
@@ -26,19 +25,13 @@ class HBnBFacade:
         return user
 
     def get_user(self, user_id):
-        user = self.user_repo.get(user_id)
-        if user:
-         
-            return user
-        return None
+        return self.user_repo.get(user_id)
 
     def get_user_by_email(self, email):
         return self.user_repo.get_by_attribute('email', email)
 
     def get_all_users(self):
-        users = self.user_repo.get_all()
-      
-        return users
+        return self.user_repo.get_all()
 
     def update_user(self, user_id, data):
         user = self.user_repo.get(user_id)
@@ -189,4 +182,5 @@ class HBnBFacade:
             return False
 
         review.place.reviews = [r for r in review.place.reviews if r.id != review_id]
-        self.review_repo.delete(revie_
+        self.review_repo.delete(review_id)
+        return True
