@@ -49,10 +49,12 @@ class HBnBFacade:
             if field in data:
                 setattr(user, field, data[field])
 
+        if 'password' in data:
+            hashed_password = bcrypt.generate_password_hash(data['password']).decode('utf-8')
+            user.password_hash = hashed_password
+
         self.user_repo.add(user)
         return user
-
-
 
     def create_amenity(self, amenity_data):
         amenity = Amenity(**amenity_data)
