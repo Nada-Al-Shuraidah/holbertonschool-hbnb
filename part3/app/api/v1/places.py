@@ -42,8 +42,10 @@ place_input = api.model('PlaceIn', {
     'price': fields.Float(required=True),
     'latitude': fields.Float(required=True),
     'longitude': fields.Float(required=True),
-    'amenities': fields.List(fields.String, required=True)
+    'amenities': fields.List(fields.String, required=True),
+    'owner_id': fields.String(required=False)  # Optional for admin use
 })
+
 
 # Routes
 @api.route('/')
@@ -60,7 +62,15 @@ class PlaceList(Resource):
         """Authenticated: Create new place"""
         payload = api.payload
         current_user = get_jwt_identity()
-        payload['owner_id'] = current_user['id']  # Force ownership
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user['id']
+
+        # Allow admins to set owner_id manually
+        owner_id = payload.get('owner_id', user_id)
+        if not is_admin and owner_id != user_id:
+            return {'error': 'Unauthorized to assign different owner_id'}, 403
+
+        payload['owner_id'] = owner_id
         try:
             place = facade.create_place(payload)
             return serialize_place(place), 201
@@ -81,12 +91,16 @@ class PlaceResource(Resource):
     @api.expect(place_input)
     @jwt_required()
     def put(self, place_id):
-        """Authenticated: Update owned place"""
+        """Authenticated: Update owned place or any place if admin"""
         current_user = get_jwt_identity()
+        is_admin = current_user.get('is_admin', False)
+        user_id = current_user['id']
+
         place = facade.get_place(place_id)
         if not place:
             api.abort(404, "Place not found")
-        if str(place.owner.id) != current_user['id']:
+
+        if not is_admin and str(place.owner.id) != user_id:
             return {'error': 'Unauthorized action'}, 403
 
         payload = api.payload
