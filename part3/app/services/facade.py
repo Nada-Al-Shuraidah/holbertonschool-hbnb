@@ -4,7 +4,7 @@ from app.models.place import Place
 from app.models.review import Review
 from app.persistence.repository import SQLAlchemyRepository
 from app.services.repositories.user_repository import UserRepository
-from app import bcrypt
+from app.extensions import bcrypt
 
 class HBnBFacade:
     def __init__(self):
