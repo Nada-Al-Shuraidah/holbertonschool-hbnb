@@ -1,50 +1,53 @@
 import re
+from app import db, bcrypt
 from .base_model import BaseModel
-from flask_bcrypt import Bcrypt
-
-bcrypt = Bcrypt()
+from sqlalchemy.orm import validates
 
 _EMAIL_RE = re.compile(r"^[^@]+@[^@]+\.[^@]+$")
 
 class User(BaseModel):
-    _used_emails = set()
+    __tablename__ = 'users'
+
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name = db.Column(db.String(50), nullable=False)
+    email = db.Column(db.String(120), nullable=False, unique=True)
+    password = db.Column(db.String(128), nullable=False)
+    is_admin = db.Column(db.Boolean, default=False)
 
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         super().__init__()
-
-        if len(first_name) > 50:
-            raise ValueError("First name must be 50 characters or fewer.")
-        if len(last_name) > 50:
-            raise ValueError("Last name must be 50 characters or fewer.")
-        if not email:
-            raise ValueError("Email is required.")
-        if not _EMAIL_RE.match(email):
-            raise ValueError("Invalid email format.")
-        if email in User._used_emails:
-            raise ValueError("Email must be unique.")
-        User._used_emails.add(email)
-
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.is_admin = is_admin
-        self.password_hash = None
-        self.password = None  # optional field for clarity
-
         if password:
             self.hash_password(password)
+        else:
+            raise ValueError("Password is required.")
 
     def hash_password(self, password):
         if not password:
             raise ValueError("Password cannot be empty.")
-        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def verify_password(self, password):
-        if not self.password_hash:
+        if not self.password:
             return False
-        return bcrypt.check_password_hash(self.password_hash, password)
+        return bcrypt.check_password_hash(self.password, password)
+
+    @validates('email')
+    def validate_email(self, key, address):
+        if not _EMAIL_RE.match(address):
+            raise ValueError("Invalid email format.")
+        return address
 
     def to_dict(self):
-        data = super().to_dict()
-        data.pop('password_hash', None)
-        return data
+        return {
+            "id": self.id,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "email": self.email,
+            "is_admin": self.is_admin,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+        }
