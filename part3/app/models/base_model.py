@@ -1,24 +1,21 @@
 import uuid
 from datetime import datetime
+from app import db
 
-class BaseModel:
-    """Core functionality: unique ID plus created/updated timestamps."""
+class BaseModel(db.Model):
+    __abstract__ = True  # يمنع SQLAlchemy من إنشاء جدول لهذا الكلاس
 
-    def __init__(self):
-        """Initialize `id`, `created_at`, and `updated_at`."""
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     def save(self):
-        """Refresh the `updated_at` timestamp."""
-        self.updated_at = datetime.now()
+        """Add the object to the session and commit."""
+        db.session.add(self)
+        db.session.commit()
 
     def update(self, data):
-        """
-        Update any existing attributes from `data` (a dict),
-        then call `save()` to refresh `updated_at`.
-        """
+        """Update fields from dict and save changes."""
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
