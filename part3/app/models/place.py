@@ -1,12 +1,7 @@
 from .base_model import BaseModel
+from .place_amenity import place_amenity
 from app.extensions import db
 from sqlalchemy.orm import relationship
-
-# Association table for many-to-many: Place <-> Amenity
-place_amenity = db.Table('place_amenity',
-    db.Column('place_id', db.String(36), db.ForeignKey('places.id'), primary_key=True),
-    db.Column('amenity_id', db.String(36), db.ForeignKey('amenities.id'), primary_key=True)
-)
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -16,13 +11,11 @@ class Place(BaseModel):
     price = db.Column(db.Float, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    
-    # Foreign Key to User
+
+    # Foreign key to User (owner)
     user_id = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-    # One-to-Many: Place -> Review
-    reviews = relationship('Review', backref='place', lazy=True)
-
-    # Many-to-Many: Place <-> Amenity
-    amenities = relationship('Amenity', secondary=place_amenity, lazy='subquery',
-                             backref=db.backref('places', lazy=True))
+    # Relationships
+    owner = relationship('User', backref='places', lazy=True)
+    reviews = relationship('Review', backref='place', lazy=True, cascade='all, delete-orphan')
+    amenities = relationship('Amenity', secondary=place_amenity, backref=db.backref('places', lazy=True), lazy='subquery')
