@@ -1,14 +1,7 @@
 from .base_model import BaseModel
+from app.extensions import db
 
 class Amenity(BaseModel):
-    """An extra feature or service (for example, Wi-Fi)."""
+    __tablename__ = 'amenities'
 
-    def __init__(self, name):
-        super().__init__()
-
-        # Validate name length
-        if len(name) > 50:
-            raise ValueError("Name must be 50 characters or fewer.")
-
-        # Assign attribute
-        self.name = name
+    name = db.Column(db.String(50), nullable=False)
