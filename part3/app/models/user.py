@@ -1,7 +1,7 @@
 import re
 from app.extensions import db, bcrypt
 from .base_model import BaseModel
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 
 _EMAIL_RE = re.compile(r"^[^@]+@[^@]+\.[^@]+$")
 
@@ -13,6 +13,10 @@ class User(BaseModel):
     email = db.Column(db.String(120), nullable=False, unique=True)
     password = db.Column(db.String(128), nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
+
+    # One-to-Many relationships
+    places = relationship('Place', backref='owner', lazy=True)
+    reviews = relationship('Review', backref='user', lazy=True)
 
     def __init__(self, first_name, last_name, email, password=None, is_admin=False):
         super().__init__()
