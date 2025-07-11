@@ -25,27 +25,32 @@ class BaseModel(db.Model):
     )
 
     def __init__(self, *args, **kwargs):
-        # assign a new UUID immediately if none provided
-        if 'id' not in kwargs or kwargs.get('id') is None:
-            kwargs['id'] = str(uuid.uuid4())
+        # let SQLAlchemy set up the object
         super().__init__(*args, **kwargs)
+        now = datetime.utcnow()
+        # ensure each instance has its own UUID immediately
+        if not getattr(self, "id", None):
+            self.id = str(uuid.uuid4())
+        # override any SQL-level defaults with real Python datetimes
+        self.created_at = now
+        self.updated_at = now
 
     def save(self):
-        """Just update the `updated_at` timestamp—no DB calls here."""
+        """Simulate saving by updating the timestamp only."""
         self.updated_at = datetime.utcnow()
 
     def update(self, data):
-        """Update fields from dict and bump timestamp."""
+        """Apply a dict of changes, then bump updated_at."""
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
         self.save()
 
     def to_dict(self):
-        """Dump all column values to a dict."""
+        """Return a dict of all column names/values."""
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
-        """Print as: [ClassName] (id) { … }"""
+        """String format: [<ClassName>] (<id>) <dict of attrs>."""
         cls = self.__class__.__name__
         return f"[{cls}] ({self.id}) {self.to_dict()}"
