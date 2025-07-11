@@ -5,6 +5,7 @@ from .place_amenity import place_amenity
 from .user import User
 from app.extensions import db
 from sqlalchemy.orm import relationship
+from .amenity import Amenity
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -20,13 +21,13 @@ class Place(BaseModel):
         # Owner must be a User instance
         if not isinstance(owner, User):
             raise TypeError("owner must be a User instance")
-        super().__init__()  # sets id, timestamps
+        super().__init__()  # sets id, created_at, updated_at
         self.title       = title
         self.description = description
         self.price       = price
         self.latitude    = latitude
         self.longitude   = longitude
-        # SQLAlchemy will populate user_id from owner
+        # SQLAlchemy will populate user_id via the relationship
         self.owner = owner
 
     # Relationships
@@ -41,3 +42,9 @@ class Place(BaseModel):
         secondary=place_amenity,
         back_populates="places"
     )
+
+    def add_amenity(self, amenity):
+        """Associate an Amenity with this Place."""
+        if not isinstance(amenity, Amenity):
+            raise TypeError("amenity must be an Amenity instance")
+        self.amenities.append(amenity)
