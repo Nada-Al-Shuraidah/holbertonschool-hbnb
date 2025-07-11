@@ -2,6 +2,7 @@
 
 from .base_model import BaseModel
 from .place_amenity import place_amenity
+from .user import User
 from app.extensions import db
 from sqlalchemy.orm import relationship
 
@@ -16,14 +17,16 @@ class Place(BaseModel):
     user_id     = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
     def __init__(self, title, description, price, latitude, longitude, owner):
-        # No extra validation specified by tests
-        super().__init__()
+        # 1) Owner must be a User instance
+        if not isinstance(owner, User):
+            raise TypeError("owner must be a User")
+        super().__init__()  # sets id, timestamps
         self.title       = title
         self.description = description
         self.price       = price
         self.latitude    = latitude
         self.longitude   = longitude
-        # Set relationship; SQLAlchemy will populate user_id
+        # SQLAlchemy will populate user_id from owner
         self.owner = owner
 
     # Relationships
