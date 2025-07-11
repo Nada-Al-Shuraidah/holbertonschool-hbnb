@@ -18,19 +18,16 @@ class User(BaseModel):
     is_admin   = db.Column(db.Boolean, default=False, nullable=False)
 
     def __init__(self, first_name, last_name, email):
-        # Validate first_name length
+        # 1) First name length check
         if len(first_name) > 50:
-            raise ValueError("first_name too long")
-        # Unique email
+            raise ValueError("first_name must be 50 characters or fewer")
+        # 2) Unique email
         if email in User._used_emails:
             raise ValueError("email already used")
-        # Initialize BaseModel (id, timestamps)
-        super().__init__()
-        # Assign fields
+        super().__init__()  # sets id, created_at, updated_at
         self.first_name = first_name
         self.last_name  = last_name
         self.email      = email
-        # Mark email as used
         User._used_emails.add(email)
 
     # Relationships
