@@ -25,28 +25,27 @@ class BaseModel(db.Model):
     )
 
     def __init__(self, *args, **kwargs):
-        # Ensure each new instance gets its own UUID immediately
-        if 'id' not in kwargs:
+        # assign a new UUID immediately if none provided
+        if 'id' not in kwargs or kwargs.get('id') is None:
             kwargs['id'] = str(uuid.uuid4())
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
     def save(self):
-        """Add the object to the session and commit."""
-        db.session.add(self)
-        db.session.commit()
+        """Just update the `updated_at` timestamp—no DB calls here."""
+        self.updated_at = datetime.utcnow()
 
     def update(self, data):
-        """Update fields from dict and save changes."""
+        """Update fields from dict and bump timestamp."""
         for key, value in data.items():
             if hasattr(self, key):
                 setattr(self, key, value)
         self.save()
 
     def to_dict(self):
-        """Return a dict of all column names/values."""
+        """Dump all column values to a dict."""
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
     def __str__(self):
-        """String format: [<ClassName>] (<id>) <dict of attrs>."""
+        """Print as: [ClassName] (id) { … }"""
         cls = self.__class__.__name__
         return f"[{cls}] ({self.id}) {self.to_dict()}"
