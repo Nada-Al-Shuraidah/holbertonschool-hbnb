@@ -1,3 +1,5 @@
+# app/models/place.py
+
 from .base_model import BaseModel
 from .place_amenity import place_amenity
 from app.extensions import db
@@ -13,20 +15,12 @@ class Place(BaseModel):
     longitude   = db.Column(db.Float, nullable=False)
     user_id     = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-    # 1) Change backref → back_populates
-    owner = relationship(
-        'User',
-        back_populates='places'
-    )
-    # 2) Change backref → back_populates
-    reviews = relationship(
-        'Review',
-        back_populates='place',
-        cascade='all, delete-orphan'
-    )
+    owner   = relationship('User', back_populates='places')
+    reviews = relationship('Review', back_populates='place', cascade='all, delete-orphan')
+
+    # <-- updated -->
     amenities = relationship(
         'Amenity',
         secondary=place_amenity,
-        backref=db.backref('places', lazy=True),
-        lazy='subquery'
+        back_populates='places'
     )
