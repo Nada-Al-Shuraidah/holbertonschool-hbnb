@@ -24,6 +24,12 @@ class BaseModel(db.Model):
         onupdate=datetime.utcnow
     )
 
+    def __init__(self, *args, **kwargs):
+        # Ensure each new instance gets its own UUID immediately
+        if 'id' not in kwargs:
+            kwargs['id'] = str(uuid.uuid4())
+        super().__init__(**kwargs)
+
     def save(self):
         """Add the object to the session and commit."""
         db.session.add(self)
