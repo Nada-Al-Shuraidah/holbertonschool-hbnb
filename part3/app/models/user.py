@@ -7,32 +7,33 @@ from sqlalchemy.orm import relationship
 class User(BaseModel):
     __tablename__ = 'users'
 
-    # 1) Track used emails for uniqueness
+    # Track used emails for uniqueness
     _used_emails = set()
 
-    # 2) Columns
-    first_name = db.Column(db.String(128), nullable=False)
-    last_name  = db.Column(db.String(128), nullable=False)
+    # Columns
+    first_name = db.Column(db.String(50), nullable=False)
+    last_name  = db.Column(db.String(50), nullable=False)
     email      = db.Column(db.String(128), nullable=False, unique=True)
-    # Password & admin flag left here for schema completeness, but not used by the tests
     password   = db.Column(db.String(128), nullable=True)
     is_admin   = db.Column(db.Boolean, default=False, nullable=False)
 
-    # 3) Simplified constructor
     def __init__(self, first_name, last_name, email):
-        # Enforce unique email at model-level
+        # Validate first_name length
+        if len(first_name) > 50:
+            raise ValueError("first_name too long")
+        # Unique email
         if email in User._used_emails:
             raise ValueError("email already used")
-        # Initialize id, timestamps
+        # Initialize BaseModel (id, timestamps)
         super().__init__()
-        # Assign business fields
+        # Assign fields
         self.first_name = first_name
         self.last_name  = last_name
         self.email      = email
-        # Mark email used
+        # Mark email as used
         User._used_emails.add(email)
 
-    # 4) Relationships (must match back_populates on the other side)
+    # Relationships
     places = relationship(
         "Place",
         back_populates="owner",
