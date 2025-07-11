@@ -1,12 +1,27 @@
-from .base_model import BaseModel
 from app.extensions import db
+from .base_model import BaseModel
 
 class Review(BaseModel):
     __tablename__ = 'reviews'
 
-    text = db.Column(db.Text, nullable=False)
-    rating = db.Column(db.Integer, nullable=False)
-
-    # Foreign keys
-    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+    rating   = db.Column(db.Integer, nullable=False)
+    comment  = db.Column(db.Text, nullable=True)
     user_id  = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
+    place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
+
+    # 1) Name this relationship 'reviewer' to match User.reviews
+    reviewer = db.relationship(
+        'User',
+        back_populates='reviews'
+    )
+    # 2) back_populates to match Place.reviews
+    place = db.relationship(
+        'Place',
+        back_populates='reviews'
+    )
+
+    def __init__(self, **kwargs):
+        rating = kwargs.get('rating')
+        if not isinstance(rating, int) or not (0 <= rating <= 5):
+            raise ValueError("rating must be an integer between 0 and 5")
+        super().__init__(**kwargs)
