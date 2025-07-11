@@ -24,6 +24,9 @@ class User(BaseModel):
         # Last name length check
         if len(last_name) > 50:
             raise ValueError("last_name must be 50 characters or fewer")
+        # Email non-empty check
+        if not email or not email.strip():
+            raise ValueError("email must be non-empty")
         # Unique email
         if email in User._used_emails:
             raise ValueError("email already used")
