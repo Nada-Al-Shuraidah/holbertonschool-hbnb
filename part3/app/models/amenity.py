@@ -16,10 +16,9 @@ class Amenity(BaseModel):
             raise ValueError("name must be a non-empty string")
         self.name = name
 
-    # Explicit many-to-many with back_populates
+    # Explicit many-to-many, no delete-orphan on the "many" side
     places = relationship(
         "Place",
         secondary=place_amenity,
-        back_populates="amenities",
-        cascade="all, delete-orphan"
+        back_populates="amenities"
     )
