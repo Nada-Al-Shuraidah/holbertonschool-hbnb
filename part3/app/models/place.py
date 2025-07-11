@@ -17,9 +17,9 @@ class Place(BaseModel):
     user_id     = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
     def __init__(self, title, description, price, latitude, longitude, owner):
-        # 1) Owner must be a User instance
+        # Owner must be a User instance
         if not isinstance(owner, User):
-            raise TypeError("owner must be a User")
+            raise TypeError("owner must be a User instance")
         super().__init__()  # sets id, timestamps
         self.title       = title
         self.description = description
