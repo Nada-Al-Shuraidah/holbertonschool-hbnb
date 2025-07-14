@@ -5,6 +5,7 @@ from .base_model import BaseModel
 from .place_amenity import place_amenity
 from .user import User
 from sqlalchemy.orm import relationship
+from .review import Review  # ✅ ضروري لإضافة review
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -16,11 +17,9 @@ class Place(BaseModel):
     longitude   = db.Column(db.Float, nullable=False)
     user_id     = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
-    # **This exact signature** so SQLAlchemy uses it:
     def __init__(self, title, description, price, latitude, longitude, owner):
         if not isinstance(owner, User):
             raise TypeError("owner must be a User instance")
-        # **Call the BaseModel constructor with no extra args**
         super().__init__()
         self.title       = title
         self.description = description
@@ -38,3 +37,8 @@ class Place(BaseModel):
         if not isinstance(amenity, Amenity):
             raise TypeError("amenity must be an Amenity instance")
         self.amenities.append(amenity)
+
+    def add_review(self, review):
+        if not isinstance(review, Review):
+            raise TypeError("review must be a Review instance")
+        self.reviews.append(review)
