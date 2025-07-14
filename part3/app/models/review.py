@@ -11,12 +11,14 @@ class Review(BaseModel):
     user_id  = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
     place_id = db.Column(db.String(36), db.ForeignKey('places.id'), nullable=False)
 
-    def __init__(self, **kwargs):
-        rating = kwargs.get('rating')
-        if not isinstance(rating, int) or not (0 <= rating <= 5):
-            raise ValueError("rating must be an integer between 0 and 5")
-        super().__init__(**kwargs)
-
-    # Relationships
     reviewer = db.relationship("User", back_populates="reviews")
     place    = db.relationship("Place", back_populates="reviews")
+
+    def __init__(self, comment, rating, place, user):
+        if not isinstance(rating, int) or not (0 <= rating <= 5):
+            raise ValueError("rating must be an integer between 0 and 5")
+        super().__init__()
+        self.comment = comment
+        self.rating = rating
+        self.place = place
+        self.reviewer = user
