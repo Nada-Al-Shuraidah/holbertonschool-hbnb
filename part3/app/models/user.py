@@ -27,7 +27,7 @@ class User(BaseModel):
         if '@' not in email:
             raise ValueError("Invalid email format")
         if email in User._used_emails:
-            raise ValueError("email already used")
+            raise ValueError("email must be unique")
         super().__init__()
         self.first_name = first_name
         self.last_name  = last_name
