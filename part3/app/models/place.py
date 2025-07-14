@@ -16,9 +16,11 @@ class Place(BaseModel):
     longitude   = db.Column(db.Float, nullable=False)
     user_id     = db.Column(db.String(36), db.ForeignKey('users.id'), nullable=False)
 
+    # **This exact signature** so SQLAlchemy uses it:
     def __init__(self, title, description, price, latitude, longitude, owner):
         if not isinstance(owner, User):
             raise TypeError("owner must be a User instance")
+        # **Call the BaseModel constructor with no extra args**
         super().__init__()
         self.title       = title
         self.description = description
@@ -41,5 +43,6 @@ class Place(BaseModel):
         from .review import Review
         if not isinstance(review, Review):
             raise TypeError("review must be a Review instance")
-        review.place = self
-        self.reviews.append(review)
+        if review not in self.reviews:
+            review.place = self
+            self.reviews.append(review)
