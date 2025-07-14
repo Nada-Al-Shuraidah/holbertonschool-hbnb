@@ -5,7 +5,6 @@ from .base_model import BaseModel
 from .place_amenity import place_amenity
 from .user import User
 from sqlalchemy.orm import relationship
-from .review import Review  # ✅ ضروري لإضافة review
 
 class Place(BaseModel):
     __tablename__ = 'places'
@@ -39,6 +38,8 @@ class Place(BaseModel):
         self.amenities.append(amenity)
 
     def add_review(self, review):
+        from .review import Review
         if not isinstance(review, Review):
             raise TypeError("review must be a Review instance")
+        review.place = self
         self.reviews.append(review)
