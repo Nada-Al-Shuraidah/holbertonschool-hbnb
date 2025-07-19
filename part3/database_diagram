@@ -1,0 +1,42 @@
+erDiagram
+    USERS {
+        UUID    id PK
+        string  first_name
+        string  last_name
+        string  email
+        boolean is_admin
+        datetime created_at
+        datetime updated_at
+    }
+    PLACES {
+        UUID    id PK
+        string  title
+        text    description
+        UUID    user_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    REVIEWS {
+        UUID    id PK
+        text    comment
+        int     rating
+        UUID    user_id FK
+        UUID    place_id FK
+        datetime created_at
+        datetime updated_at
+    }
+    AMENITIES {
+        UUID    id PK
+        string  name
+        datetime created_at
+        datetime updated_at
+    }
+    PLACE_AMENITIES {
+        UUID    place_id   FK
+        UUID    amenity_id FK
+    }
+
+    USERS      ||--o{ PLACES      : owns
+    USERS      ||--o{ REVIEWS     : writes
+    PLACES     ||--o{ REVIEWS     : receives
+    PLACES     }o--o{ AMENITIES   : offers
