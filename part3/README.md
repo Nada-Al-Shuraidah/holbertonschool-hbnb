@@ -76,7 +76,8 @@ Replace in-memory storage with a **SQLite** database via **SQLAlchemy ORM**.
 
 # 🖼️ Database Schema Visualization
 
-View the ER diagram here: [ER Diagram (Mermaid)](./er_diagram.mmd)
+
+View the ER diagram here: [ER Diagram](./er_diagram.mmd)
 ---
 
 # ✅ Summary of Endpoints
